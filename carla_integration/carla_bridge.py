@@ -131,15 +131,43 @@ class JunctionController:
             print("❌ [Bridge] No traffic lights found in CARLA world!")
             return
 
-        # Group lights by junction_id
+        # Group lights by spatial clustering (Town05 lights often lack junction_id)
         junction_groups = {}
+        standalone_lights = []
+        
         for light in all_lights:
             light.freeze(True)  # Take manual control
             stop_wps = light.get_stop_waypoints()
             if stop_wps and stop_wps[0].is_junction:
                 jid = stop_wps[0].junction_id
                 junction_groups.setdefault(jid, []).append(light)
-
+            else:
+                standalone_lights.append(light)
+                
+        # Fallback for Town05: cluster standalone lights by distance
+        next_jid = max([int(k) for k in junction_groups.keys()] + [0]) + 1
+        clusters = list(junction_groups.values())
+        
+        for l in standalone_lights:
+            loc = l.get_location()
+            found_cluster = False
+            for cluster in clusters:
+                # Average center of cluster
+                cx = sum(c.get_location().x for c in cluster) / len(cluster)
+                cy = sum(c.get_location().y for c in cluster) / len(cluster)
+                cz = sum(c.get_location().z for c in cluster) / len(cluster)
+                center = carla.Location(cx, cy, cz)
+                
+                if loc.distance(center) < 30.0:
+                    cluster.append(l)
+                    found_cluster = True
+                    break
+            if not found_cluster:
+                clusters.append([l])
+                
+        # Re-build junction groups from clusters
+        junction_groups = {i: cluster for i, cluster in enumerate(clusters) if len(cluster) > 1}
+        
         if not junction_groups:
             print("❌ [Bridge] No junction-linked traffic lights found!")
             return

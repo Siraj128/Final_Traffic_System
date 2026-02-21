@@ -28,6 +28,7 @@ except ImportError:
     from vehicle_detector import VehicleDetector
     from lane_mapper import LaneMapper
     from zone_analyzer import ZoneAnalyzer
+    from anpr_controller import ANPRController
     def log_info(msg, src): print(f"ℹ️ [{src}] {msg}")
     def log_error(msg, src): print(f"❌ [{src}] {msg}")
 

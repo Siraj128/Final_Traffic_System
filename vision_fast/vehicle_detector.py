@@ -60,8 +60,14 @@ class VehicleDetector:
         self.coco_targets = [1, 2, 3, 5, 7] 
 
     def initialize(self) -> bool:
-        if RTDETR is None or YOLO is None: return False
-        
+        global RTDETR, YOLO
+        if RTDETR is None or YOLO is None: 
+            try:
+                from ultralytics import RTDETR, YOLO
+            except ImportError:
+                print("❌ Ultralytics not installed. Cannot initialize detectors.")
+                return False
+                
         # Thread-Safe Initialization
         with VehicleDetector._INIT_LOCK:
             # 1. Load RT-DETR (If not already loaded)

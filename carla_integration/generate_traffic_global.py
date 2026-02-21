@@ -48,7 +48,7 @@ try:
 except FileNotFoundError:
     CONFIG = {}
 
-VEHICLE_COUNT = CONFIG.get("vehicle_count", 40)
+VEHICLE_COUNT = CONFIG.get("vehicle_count", 20)
 SPECTATOR_HEIGHT = CONFIG.get("spectator_height", 50)
 
 
@@ -99,14 +99,19 @@ def main():
                 ))
             )
 
-        responses = client.apply_batch_sync(batch, True)
-        success = len([r for r in responses if not r.error])
-        print(f"✅ Active Vehicles: {success}/{VEHICLE_COUNT}")
+        try:
+            responses = client.apply_batch_sync(batch, True)
+            success = len([r for r in responses if not r.error])
+            print(f"✅ Active Vehicles: {success}/{VEHICLE_COUNT}")
+        except Exception as e:
+            print(f"❌ Error during batch spawn: {e}")
+            import traceback
+            traceback.print_exc()
 
         # 5. Position spectator above first junction (bridge will reposition later)
         all_lights = world.get_actors().filter('traffic.traffic_light')
         if all_lights:
-            locs = [l.get_location() for l in all_lights[:4]]
+            locs = [l.get_location() for l in list(all_lights)[:4]]
             cx = sum(p.x for p in locs) / len(locs)
             cy = sum(p.y for p in locs) / len(locs)
             cz = sum(p.z for p in locs) / len(locs)

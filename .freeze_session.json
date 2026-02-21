@@ -1,9 +1,9 @@
 {
-  "timestamp": 1771670963.749761,
+  "timestamp": 1771698284.9056869,
   "congestion_state": "SAFE",
   "opened_lanes": [
-    "East_All",
-    "North_Left"
+    "South_All",
+    "East_Left"
   ],
   "intersection_status": "CLEAR"
 }

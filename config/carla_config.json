@@ -3,7 +3,7 @@
     "carla_port": 2000,
     "bridge_port": 8100,
     "town": "Town05",
-    "target_junction_index": 0,
+    "target_junction_index": 13,
     "vehicle_count": 40,
     "spectator_height": 50,
     "yellow_duration_s": 2.0,

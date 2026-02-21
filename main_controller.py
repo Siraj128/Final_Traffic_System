@@ -24,6 +24,7 @@ import time
 import json
 import threading
 import traceback
+import requests
 from queue import Queue, Empty
 from collections import defaultdict
 
@@ -675,6 +676,11 @@ class MainController:
         else:
             print("  📷 [MAIN] ANPR Mode: REAL (OCR)")
 
+        self.carla_sync = False
+        if "--carla-sync" in sys.argv:
+            self.carla_sync = True
+            print("  🌐 [MAIN] CARLA Sync Enabled (HTTP POST to :8100)")
+
         self._stop_event = threading.Event()
         
         # --- Core Components ---
@@ -901,6 +907,37 @@ class MainController:
                 
                 self.current_winner = next_winner
                 self.current_green_time = next_green
+                
+                # CARLA Sync Check
+                if getattr(self, "carla_sync", False):
+                    # Construct payload
+                    payload = {
+                        "winner_phase": next_winner,
+                        "allowed_lanes": self.decision_maker.prev_open_lanes,
+                        "allocated_times": result.get("scores", {}), # Fallback if missing
+                        "priority_scores": result.get("scores", {}),
+                        "system_state": result.get("state", "SAFE"),
+                        "phase_saturations": None
+                    }
+                    if "allocated_times" in result:
+                        pass # It is handled in _calculate_next_phase but not returned explicitly.
+                        # Wait, _calculate_next_phase returns {"scores": ..., "state": ..., "winner": ..., "green_time": ...}
+                        # We need full allocated_times. Let's fix that below if needed, but for now we'll pass scores as allocated_times to prevent crash if missing.
+                        
+                    # Best attempt to populate allocated_times exactly
+                    # Actually carla bridge just uses decision.allocated_times.get(winner, DEFAULT)
+                    payload["allocated_times"] = {next_winner: next_green}
+                    
+                    # Send via HTTP
+                    def send_to_carla(p):
+                        try:
+                            resp = requests.post("http://localhost:8100/carla/decision", json=p, timeout=1.0)
+                            if resp.status_code == 200:
+                                print("  📡 [CARLA] Successfully synced decision to simulator")
+                        except Exception as e:
+                            print(f"  ⚠️ [CARLA Sync Error] {e}")
+                            
+                    threading.Thread(target=send_to_carla, args=(payload,), daemon=True).start()
         
         except KeyboardInterrupt:
             self.shutdown()
@@ -1100,6 +1137,7 @@ def main():
     parser.add_argument("--grid", action="store_true", help="Use Grid Detection (ROI Only)")
     parser.add_argument("--no-roi", action="store_true", help="Hide ROI lines in video")
     parser.add_argument("--dummy-anpr", action="store_true", help="Enable Dummy ANPR Mode (100 Profiles)")
+    parser.add_argument("--carla-sync", action="store_true", help="Sync decisions to CARLA simulator over HTTP (port 8100)")
     
     args = parser.parse_args()
     
