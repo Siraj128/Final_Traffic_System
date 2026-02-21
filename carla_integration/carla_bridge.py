@@ -400,6 +400,29 @@ class JunctionController:
                 sat_str,
                 color=color_cyan, life_time=lt
             )
+            
+        # Draw labels above each traffic light group
+        for direction, lights in self._light_groups.items():
+            if lights:
+                cx = sum(l.get_location().x for l in lights) / len(lights)
+                cy = sum(l.get_location().y for l in lights) / len(lights)
+                cz = max(l.get_location().z for l in lights) # Use max Z to float above
+
+                # Highlight the label in Green if it is the winner/open lane
+                is_active = False
+                if self._phase_state == "GREEN" and decision:
+                    for lane in decision.allowed_lanes:
+                        if lane.startswith(direction):
+                            is_active = True
+                            break
+                            
+                text_color = color_green if is_active else color_white
+                
+                self.debug.draw_string(
+                    carla.Location(cx, cy, cz + 3), 
+                    f"--- {direction.upper()} ---", 
+                    color=text_color, life_time=lt
+                )
 
         # Score bars for all 4 directions
         scores = decision.priority_scores

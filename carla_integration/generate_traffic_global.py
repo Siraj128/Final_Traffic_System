@@ -77,7 +77,7 @@ def main():
 
         # 3. Set up Traffic Manager
         print(f"🚗 Spawning {VEHICLE_COUNT} vehicles across Town05...")
-        traffic_manager = client.get_trafficmanager(8000)
+        traffic_manager = client.get_trafficmanager(8050)
         traffic_manager.set_global_distance_to_leading_vehicle(2.5)
         traffic_manager.set_hybrid_physics_mode(True)
 
