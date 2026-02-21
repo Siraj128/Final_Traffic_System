@@ -1,0 +1,35 @@
+# Root .gitignore for SafeDrive Rewards
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Flutter
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/generated_plugin_registrant.dart
+**/pubspec.lock
+
+# Node.js
+**/node_modules/
+**/npm-debug.log
+.env
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/venv/
+**/.env
+
+# Local Databases (Keep the folder, ignore temp files)
+**/*.db-journal
+**/*.db-shm
+**/*.db-wal

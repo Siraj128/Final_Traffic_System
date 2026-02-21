@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Smart-Net CMS: Pune City View</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        #panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 5;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            width: 340px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 8px;
+        }
+
+        .status-box {
+            padding: 8px;
+            background: #eef2f5;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border-left: 4px solid #aaa;
+        }
+
+        .legend {
+            margin-top: 10px;
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            border-radius: 50%;
+        }
+
+        .btn-ghost {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+            width: 100%;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-ghost:hover {
+            background: #c0392b;
+        }
+
+        .junction-item {
+            font-size: 14px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .junction-sub {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+    </style>
+
+    <script src="dashboard_config.js"></script>
+    <script>
+        function loadGoogleMaps() {
+            var script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.API_KEY}&libraries=places&callback=initMap`;
+            script.async = true; script.defer = true;
+            document.head.appendChild(script);
+        }
+    </script>
+</head>
+
+<body onload="loadGoogleMaps()">
+
+    <div id="panel">
+        <h3>🚦 Smart-Net Pune Backbone</h3>
+        <div id="connection-status" class="status-box" style="border-left-color: orange;">System: Initializing...</div>
+
+        <div style="font-size: 12px; color: #555; margin-bottom: 10px;">
+            Monitoring <b>30+ Major Junctions</b> across Pune City.
+        </div>
+
+        <div class="legend">
+            <div><span class="dot" style="background:green"></span> Flowing</div>
+            <div><span class="dot" style="background:orange"></span> Busy</div>
+            <div><span class="dot" style="background:red"></span> Congested</div>
+        </div>
+
+        <hr style="border:0; border-top:1px solid #ddd; margin: 15px 0;">
+        <div style="font-size: 11px; color: #888;">
+            Click any pin to view details or simulate a jam.<br>
+            <b style="color:#2196F3">Blue Lines:</b> Active Traffic Feed<br>
+            <b style="color:#FFC107">Yellow Lines:</b> Throttling Active
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map, placesService;
+        let markers = {};
+        let polylines = [];
+        const SERVER_URL = "http://localhost:8000";
+
+        async function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 18.5204, lng: 73.8567 }, // Pune City Center
+                zoom: 13, // Zoomed out to see the whole city
+                styles: [{ "featureType": "poi", "stylers": [{ "visibility": "simplified" }] }]
+            });
+
+            placesService = new google.maps.places.PlacesService(map);
+            await loadTopology();
+            setInterval(updateLiveStatus, 1500);
+        }
+
+        async function loadTopology() {
+            try {
+                const response = await fetch(`${SERVER_URL}/topology`);
+                const data = await response.json();
+                const nodes = data.nodes;
+                const connections = data.connections;
+
+                document.getElementById("connection-status").innerText = `System: Online (${Object.keys(nodes).length} Nodes)`;
+                document.getElementById("connection-status").style.borderLeftColor = "green";
+
+                // Draw Nodes
+                for (let id in nodes) {
+                    const node = nodes[id];
+                    const position = { lat: node.lat, lng: node.lng };
+
+                    const marker = new google.maps.Marker({
+                        position: position,
+                        map: map,
+                        title: node.name,
+                        icon: getPinIcon("GREEN")
+                    });
+
+                    // Attach Data & Click Event
+                    const infoWindow = new google.maps.InfoWindow();
+
+                    marker.addListener("click", () => {
+                        const content = `
+                        <div style="padding:5px; min-width:180px">
+                            <div class="junction-item">${node.name}</div>
+                            <div class="junction-sub">ID: ${id} | Type: ${node.type || 'NODE'}</div>
+                            <hr style="border:0; border-top:1px solid #eee; margin:8px 0">
+                            <div>Live Status: <b id="win-status-${id}" style="color:green">Normal</b></div>
+                            <button class="btn-ghost" onclick="triggerGhost('${id}', '${node.name}')">🔥 Trigger 95% Jam</button>
+                            <button class="btn-ghost" style="background: #f57f17; margin-top: 5px;" onclick="triggerAverage('${id}', '${node.name}')">⚠️ Trigger 60% Busy</button>
+                            <button class="btn-ghost" style="background: #2e7d32; margin-top: 5px;" onclick="triggerClear('${id}', '${node.name}')">✅ Clear Traffic</button>
+                        </div>
+                    `;
+                        infoWindow.setContent(content);
+                        infoWindow.open(map, marker);
+                    });
+
+                    markers[id] = marker;
+                }
+
+                // Draw Connections (Bi-Directional)
+                for (let downstream in connections) {
+                    let laneMap = connections[downstream];
+
+                    if (laneMap) {
+                        Object.values(laneMap).forEach(upstreamID => {
+                            let downNode = nodes[downstream];
+                            let upNode = nodes[upstreamID];
+
+                            if (downNode && upNode) {
+                                // 1. Parse Floats (Critical)
+                                let lat1 = parseFloat(upNode.lat);
+                                let lng1 = parseFloat(upNode.lng);
+                                let lat2 = parseFloat(downNode.lat);
+                                let lng2 = parseFloat(downNode.lng);
+
+                                // 2. Calculate Vector
+                                let dLat = lat2 - lat1;
+                                let dLng = lng2 - lng1;
+                                let len = Math.sqrt(dLat * dLat + dLng * dLng);
+
+                                if (len > 0) {
+                                    // 3. Right Shift Vector (Normal: -y, x)
+                                    // Scale 0.0003 is approx 30m gap
+                                    const scale = 0.0003;
+                                    let offLat = (-dLng / len) * scale;
+                                    let offLng = (dLat / len) * scale;
+
+                                    // 4. Apply Offset
+                                    const linePath = [
+                                        { lat: lat1 + offLat, lng: lng1 + offLng },
+                                        { lat: lat2 + offLat, lng: lng2 + offLng }
+                                    ];
+
+                                    const line = new google.maps.Polyline({
+                                        path: linePath,
+                                        geodesic: true,
+                                        strokeColor: "#2196F3", strokeOpacity: 0.6, strokeWeight: 4,
+                                        icons: [{ icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 3 }, offset: '50%' }],
+                                        map: map
+                                    });
+
+                                    // ID: UP -> DOWN (Direction of travel)
+                                    polylines.push({ id: upstreamID + "_TO_" + downstream, obj: line });
+                                }
+                            }
+                        });
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById("connection-status").innerText = "System: Offline (Server Unreachable)";
+                document.getElementById("connection-status").style.borderLeftColor = "red";
+            }
+        }
+
+        async function updateLiveStatus() {
+            try {
+                const response = await fetch(`${SERVER_URL}/live_status`);
+                const state = await response.json();
+
+                for (let id in markers) {
+                    // FIX: Server returns JSON string for value, need to parse it
+                    let nodeData = state[id];
+                    if (typeof nodeData === 'string') {
+                        try { nodeData = JSON.parse(nodeData); } catch (e) { continue; }
+                    }
+
+                    if (nodeData && nodeData.lanes) {
+                        let maxSat = 0;
+                        // Handle both "ALL" key and individual lanes
+                        if (nodeData.lanes["ALL"]) {
+                            maxSat = nodeData.lanes["ALL"].saturation_level;
+                        } else {
+                            for (let l in nodeData.lanes) {
+                                if (nodeData.lanes[l].saturation_level > maxSat) {
+                                    maxSat = nodeData.lanes[l].saturation_level;
+                                }
+                            }
+                        }
+
+                        // Update Map Marker & Link Color
+                        if (maxSat > 85) {
+                            markers[id].setIcon(getPinIcon("RED"));
+                            highlightLink(id, "#FF0000", 6); // RED
+                        } else if (maxSat > 50) {
+                            markers[id].setIcon(getPinIcon("YELLOW"));
+                            highlightLink(id, "#FFC107", 5); // YELLOW
+                        } else {
+                            markers[id].setIcon(getPinIcon("GREEN"));
+                            highlightLink(id, "#2196F3", 3); // BLUE
+                        }
+
+                        // Update InfoWindow Text (if open)
+                        let winStatus = document.getElementById(`win-status-${id}`);
+                        if (winStatus) {
+                            winStatus.innerText = maxSat > 85 ? `CRITICAL (${maxSat}%)` : `Flowing (${maxSat}%)`;
+                            winStatus.style.color = maxSat > 85 ? "red" : (maxSat > 50 ? "orange" : "green");
+                        }
+                    }
+                }
+            } catch (e) { }
+        }
+
+        function highlightLink(downstreamID, color, weight) {
+            polylines.forEach(link => {
+                if (link.id.includes("_TO_" + downstreamID)) {
+                    link.obj.setOptions({
+                        strokeColor: color,
+                        strokeWeight: weight,
+                        strokeOpacity: 0.8
+                    });
+                }
+            });
+        }
+
+        function getOffsetPoint(lat1, lng1, lat2, lng2) {
+            // Placeholder helper if needed in future, logic is inline for loop now
+            return { lat: lat1, lng: lng1 };
+        }
+
+        window.triggerGhost = function (id, name) {
+            fetch(`${SERVER_URL}/inject_congestion`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target_junction: id, saturation_value: 95.0 })
+            }).then(() => alert(`🔥 Jam Simulated on ${name}!`));
+        };
+
+        window.triggerAverage = function (id, name) {
+            fetch(`${SERVER_URL}/inject_congestion`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target_junction: id, saturation_value: 60.0 })
+            }).then(() => alert(`⚠️ Busy Traffic Simulated on ${name}!`));
+        };
+
+        window.triggerClear = function (id, name) {
+            fetch(`${SERVER_URL}/inject_congestion`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target_junction: id, saturation_value: 10.0 })
+            }).then(() => alert(`✅ Clearing Traffic on ${name}...`));
+        };
+
+        function getPinIcon(color) {
+            if (color === "RED") return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+            if (color === "YELLOW") return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+            return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
+        }
+    </script>
+</body>
+
+</html>

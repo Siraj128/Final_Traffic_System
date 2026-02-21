@@ -1,0 +1,9 @@
+{
+  "timestamp": 1771670963.749761,
+  "congestion_state": "SAFE",
+  "opened_lanes": [
+    "East_All",
+    "North_Left"
+  ],
+  "intersection_status": "CLEAR"
+}

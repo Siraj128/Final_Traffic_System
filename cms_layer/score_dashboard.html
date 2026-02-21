@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMS — Real-Time Score Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-card: #111827;
+            --bg-card-inner: #1a2238;
+            --border: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --grade-S: #ef4444;
+            --grade-A: #f97316;
+            --grade-B: #eab308;
+            --grade-C: #22c55e;
+            --grade-D: #3b82f6;
+            --glow-S: rgba(239, 68, 68, 0.3);
+            --glow-A: rgba(249, 115, 22, 0.3);
+            --glow-B: rgba(234, 179, 8, 0.3);
+            --glow-C: rgba(34, 197, 94, 0.3);
+            --glow-D: rgba(59, 130, 246, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Header ────────────────────────────── */
+        .header {
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 span {
+            color: var(--accent-blue);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--grade-C);
+            animation: pulse-dot 1.5s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        .pulse-container {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 10px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+        }
+
+        /* ── System Tabs ───────────────────────── */
+        .system-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px 30px;
+        }
+
+        .tab-btn {
+            padding: 10px 28px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-card);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: width 0.1s ease-out;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #1e3a5f, #1e40af);
+            color: #fff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .tab-btn:hover:not(.active) {
+            border-color: #334155;
+            color: var(--text-primary);
+        }
+
+        /* ── Phase Grid ────────────────────────── */
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 0 30px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ── Phase Card ────────────────────────── */
+        .phase-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .phase-card:hover::before {
+            opacity: 1;
+        }
+
+        .phase-card:hover {
+            border-color: #334155;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .phase-name {
+            font-weight: 800;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phase-dir {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: var(--bg-card-inner);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── Grade Badge ───────────────────────── */
+        .grade-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .grade-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .grade-badge.S {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--grade-S);
+            box-shadow: 0 0 25px var(--glow-S);
+        }
+
+        .grade-badge.A {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--grade-A);
+            box-shadow: 0 0 25px var(--glow-A);
+        }
+
+        .grade-badge.B {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--grade-B);
+            box-shadow: 0 0 25px var(--glow-B);
+        }
+
+        .grade-badge.C {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--grade-C);
+            box-shadow: 0 0 25px var(--glow-C);
+        }
+
+        .grade-badge.D {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--grade-D);
+            box-shadow: 0 0 25px var(--glow-D);
+        }
+
+        .grade-info {
+            flex: 1;
+        }
+
+        .grade-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .grade-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.1s;
+        }
+
+        /* ── Value Bar ─────────────────────────── */
+        .value-bar-container {
+            background: var(--bg-card-inner);
+            border-radius: 6px;
+            height: 6px;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .value-bar {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.1s;
+            background: var(--accent-blue);
+        }
+
+        /* ── Section Divider ───────────────────── */
+        .section-divider {
+            border: none;
+            border-top: 1px dashed #1e293b;
+            margin: 14px 0;
+        }
+
+        .section-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 3px;
+            height: 10px;
+            border-radius: 2px;
+            background: var(--accent-blue);
+        }
+
+        /* ── Priority Scores ───────────────────── */
+        .priority-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .priority-box {
+            flex: 1;
+            background: var(--bg-card-inner);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid transparent;
+            transition: all 0.1s;
+        }
+
+        .priority-box:hover {
+            border-color: #334155;
+        }
+
+        .priority-box .p-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .priority-box .p-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            transition: all 0.1s;
+        }
+
+        /* ── Composite ─────────────────────────── */
+        .composite-row {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+
+        .composite-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .composite-formula {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .composite-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-blue);
+        }
+
+        /* ── Hybrid Zone B (Hidden in Grid-only mode) ── */
+        .hybrid-only {
+            display: none;
+        }
+
+        .show-hybrid .hybrid-only {
+            display: block;
+        }
+
+        /* ── No Data State ─────────────────────── */
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-data-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .no-data-text {
+            font-size: 0.9rem;
+        }
+
+        /* ── Flash on update ───────────────────── */
+        @keyframes flash-update {
+            0% {
+                background: rgba(59, 130, 246, 0.08);
+            }
+
+            100% {
+                background: transparent;
+            }
+        }
+
+        .flash {
+            animation: flash-update 0.2s ease-out;
+        }
+
+        /* ── Responsive ────────────────────────── */
+        @media (max-width: 600px) {
+            .phase-grid {
+                grid-template-columns: 1fr;
+                padding: 0 12px 20px;
+            }
+
+            .header {
+                padding: 14px 16px;
+            }
+
+            .system-tabs {
+                padding: 14px 12px;
+            }
+        }
+
+        /* ── Visual Grid ────────────────────────── */
+        .visual-container {
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .visual-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .visual-title {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .grid-layout {
+            display: grid;
+            gap: 2px;
+            background: #000;
+            padding: 2px;
+            border-radius: 4px;
+        }
+
+        /* 10 rows for Grid mode, 5 for Hybrid */
+        .grid-layout.grid-mode {
+            grid-template-rows: repeat(10, 1fr);
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .grid-layout.hybrid-mode {
+            grid-template-rows: repeat(5, 1fr);
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #111;
+            border-radius: 1px;
+            transition: background 0.1s ease;
+        }
+
+        /* Priority Zone (0-50m) */
+        .priority-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .priority-lane {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .lane-title {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .lane-count {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lane-weight {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+        }
+
+        .mode-badge {
+            font-size: 0.55rem;
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>🚦 HTMS <span>Score Dashboard</span></h1>
+        <div class="header-right">
+            <div id="liveClock" style="font-family: monospace; color: #94a3b8; margin-right: 15px;">00:00:00</div>
+            <div class="pulse-container">
+                <span id="junctionDisplay" style="color: #fff; font-weight: 700;">Connecting...</span>
+                <div class="status-dot" id="statusDot"></div>
+                <span id="updateTimer" style="color: #64748b; font-size: 0.75rem;">--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Tabs -->
+    <div class="system-tabs">
+        <button class="tab-btn active" data-mode="grid" onclick="switchMode('grid')">
+            📐 Grid System (0–100m)
+        </button>
+        <button class="tab-btn" data-mode="hybrid" onclick="switchMode('hybrid')">
+            🔀 Hybrid System (0–100m)
+        </button>
+    </div>
+
+    <!-- Phase Cards Container -->
+    <div class="phase-grid" id="phaseGrid">
+        <!-- Cards generated by JS -->
+        <div class="no-data" id="noData">
+            <div class="no-data-icon">📡</div>
+            <div class="no-data-text">Waiting for junction data...</div>
+        </div>
+    </div>
+
+    <script>
+        // ── Configuration ─────────────────────────────────────────
+        const CMS_URL = 'http://localhost:8000';
+        const POLL_INTERVAL = 200; // MS (Turbo Sync)
+        const PHASES = ['North', 'South', 'East', 'West'];
+        const PHASE_ARROWS = { North: '↑ N', South: '↓ S', East: '→ E', West: '← W' };
+
+        let currentMode = 'grid';
+        let lastData = {};
+        let lastValues = {};
+        let pollTimer = null;
+        let lastUpdateTime = 0;
+
+        // ── Grade Helpers ─────────────────────────────────────────
+        function valToGrade(val) {
+            if (val >= 4.5) return 'S';
+            if (val >= 4.0) return 'A';
+            if (val >= 3.0) return 'B';
+            if (val >= 2.0) return 'C';
+            return 'D';
+        }
+
+        function gradeColor(grade) {
+            const g = grade.charAt(0); // Handle "STALLED (B)" etc
+            const map = { S: '#ef4444', A: '#f97316', B: '#eab308', C: '#22c55e', D: '#3b82f6' };
+            return map[g] || '#3b82f6';
+        }
+
+        function gradeClass(grade) {
+            const g = grade.charAt(0);
+            return ['S', 'A', 'B', 'C', 'D'].includes(g) ? g : 'D';
+        }
+
+        // ── Build Phase Card HTML ──────────────────────────────────
+        function buildPhaseCard(phase) {
+            const isHybrid = currentMode === 'hybrid';
+            return `
+        <div class="phase-card ${isHybrid ? 'show-hybrid' : ''}" id="card-${phase}">
+            <div class="phase-header">
+                <div>
+                    <span class="phase-name">${phase}</span>
+                    <div class="phase-dir">${PHASE_ARROWS[phase]}</div>
+                </div>
+                <div class="mode-badge" id="modeBadge-${phase}">
+                    ${isHybrid ? 'HYBRID ENGINE' : 'GRID ONLY'}
+                </div>
+            </div>
+
+            <!-- Visualization Area -->
+            <div class="visual-container">
+                <div class="visual-header">
+                    <span class="visual-title">
+                        ${isHybrid ? 'Zone A: 51-100m' : 'Full Range: 0-100m'}
+                    </span>
+                    <span class="visual-title">Detection Grid</span>
+                </div>
+                
+                <div id="grid-${phase}" class="grid-layout ${isHybrid ? 'hybrid-mode' : 'grid-mode'}">
+                    <!-- Cells filled by JS -->
+                </div>
+
+                <!-- Priority Zone (Zone B) -->
+                <div class="hybrid-only">
+                    <div class="visual-header" style="margin-top: 12px;">
+                        <span class="visual-title">Zone B: 0-50m</span>
+                        <span class="visual-title">Priority Lanes</span>
+                    </div>
+                    <div class="priority-layout">
+                        <div class="priority-lane">
+                            <div class="lane-title">Straight / Right</div>
+                            <div class="lane-count" id="countStr-${phase}">0</div>
+                            <div class="lane-weight" id="weightStr-${phase}">0 pts</div>
+                        </div>
+                        <div class="priority-lane">
+                            <div class="lane-title">Left Turn Lane</div>
+                            <div class="lane-count" id="countLeft-${phase}">0</div>
+                            <div class="lane-weight" id="weightLeft-${phase}">0 pts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-label">Grid Grade</div>
+                <div class="grade-badge D" id="grade-${phase}">D</div>
+            </div>
+            
+            <div class="stats-row" style="margin-bottom: 4px;">
+                <div class="stat-label">Saturation Value</div>
+                <div class="stat-value" id="val-${phase}">1.00</div>
+            </div>
+            <div class="value-bar-container" style="margin-bottom: 12px;">
+                <div class="value-bar" id="bar-${phase}" style="width: 20%;"></div>
+            </div>
+
+            <!-- Composite Score -->
+            <div class="composite-row">
+                <div>
+                    <div class="composite-label">Total Priority Weight</div>
+                    <div class="composite-formula" id="formula-${phase}">
+                        ${isHybrid ? 'Grid + Priority' : 'Grid × 100'}
+                    </div>
+                </div>
+                <div class="composite-value" id="comp-${phase}">0</div>
+            </div>
+        </div>`;
+        }
+
+        // ── Render All Cards ───────────────────────────────────────
+        function renderCards() {
+            const grid = document.getElementById('phaseGrid');
+            const noData = document.getElementById('noData');
+
+            grid.innerHTML = PHASES.map(p => buildPhaseCard(p)).join('');
+            noData?.remove();
+        }
+
+        // ── Grid Rendering Helper ──────────────────────────────────
+        function renderGrid(phase, cells) {
+            const gridEl = document.getElementById(`grid-${phase}`);
+            if (!gridEl) return;
+
+            // Only clear and rebuild if cell count changed (mode change)
+            const expectedCount = currentMode === 'hybrid' ? 60 : 120;
+            if (gridEl.children.length !== expectedCount) {
+                gridEl.innerHTML = Array(expectedCount).fill('<div class="cell"></div>').join('');
+            }
+
+            const cellEls = gridEl.children;
+            cells.forEach((cell, i) => {
+                if (cellEls[i]) {
+                    const fill = cell.fill || 0;
+                    // Color from Green (0) to Red (100)
+                    let color = '#3b82f6'; // Default Blue
+                    if (fill > 80) color = '#ef4444';      // Red
+                    else if (fill > 60) color = '#f97316'; // Orange
+                    else if (fill > 40) color = '#eab308'; // Yellow
+                    else if (fill > 10) color = '#22c55e'; // Green
+                    else color = '#111';                   // Empty
+
+                    cellEls[i].style.background = color;
+                    cellEls[i].style.opacity = fill > 5 ? 1 : 0.3;
+                }
+            });
+        }
+
+        // ── Update Card Data ───────────────────────────────────────
+        function updateCard(phase, laneData) {
+            const sd = laneData.score_details || null;
+
+            // 1. Core Score Data
+            let gridRaw, gridScore, pStr, pLeft, composite, cells, pCounts;
+            if (sd && sd.grid_raw !== undefined) {
+                gridRaw = sd.grid_raw;
+                gridScore = sd.grid_score || Math.round(gridRaw * 100);
+                pStr = sd.p_straight || 0;
+                pLeft = sd.p_left || 0;
+                composite = sd.composite || (gridScore + pStr + pLeft);
+                cells = sd.grid_cells || [];
+                pCounts = sd.priority_vehicles || { left: 0, straight: 0 };
+            } else {
+                const sat = laneData.saturation_level || 0;
+                gridRaw = 1.0 + (sat / 100) * 4.0;
+                gridScore = Math.round(gridRaw * 100);
+                pStr = 0; pLeft = 0;
+                composite = gridScore;
+                cells = []; pCounts = { left: 0, straight: 0 };
+            }
+
+            const grade = valToGrade(gridRaw);
+            const gc = gradeClass(grade);
+
+            // 2. Update Visual Grid
+            renderGrid(phase, cells);
+
+            // 3. Update Text/Badges
+            const badgeEl = document.getElementById(`grade-${phase}`);
+            if (badgeEl) {
+                badgeEl.textContent = grade;
+                badgeEl.className = `grade-badge ${gc}`;
+            }
+
+            const valEl = document.getElementById(`val-${phase}`);
+            if (valEl) valEl.textContent = gridRaw.toFixed(2);
+
+            const barEl = document.getElementById(`bar-${phase}`);
+            if (barEl) {
+                const pct = Math.min(100, ((gridRaw - 1) / 4) * 100);
+                barEl.style.width = pct + '%';
+                barEl.style.background = gradeColor(grade);
+            }
+
+            // 4. Update Priority Stats (Hybrid)
+            if (currentMode === 'hybrid') {
+                const cLeft = document.getElementById(`countLeft-${phase}`);
+                if (cLeft) cLeft.textContent = pCounts.left;
+                const wLeft = document.getElementById(`weightLeft-${phase}`);
+                if (wLeft) wLeft.textContent = Math.round(pLeft) + ' pts';
+
+                const cStr = document.getElementById(`countStr-${phase}`);
+                if (cStr) cStr.textContent = pCounts.straight;
+                const wStr = document.getElementById(`weightStr-${phase}`);
+                if (wStr) wStr.textContent = Math.round(pStr) + ' pts';
+            }
+
+            // 5. Update Composite
+            const compEl = document.getElementById(`comp-${phase}`);
+            if (compEl) compEl.textContent = Math.round(composite);
+
+            const formulaEl = document.getElementById(`formula-${phase}`);
+            if (formulaEl) {
+                if (currentMode === 'hybrid') {
+                    formulaEl.textContent = `${gridRaw.toFixed(2)} + ${Math.round(pStr)} + ${Math.round(pLeft)}`;
+                } else {
+                    formulaEl.textContent = `${gridRaw.toFixed(2)} × 100 = ${gridScore}`;
+                }
+            }
+
+            // Flash effect on change
+            const card = document.getElementById(`card-${phase}`);
+            if (card) {
+                const key = `${phase}_comp`;
+                const oldVal = lastValues[key];
+                const newVal = Math.round(composite);
+                if (oldVal !== undefined && oldVal !== newVal) {
+                    card.classList.remove('flash');
+                    void card.offsetWidth;
+                    card.classList.add('flash');
+                }
+                lastValues[key] = newVal;
+            }
+        }
+
+        // ── Polling Logic ──────────────────────────────────────────
+        async function fetchData() {
+            try {
+                // Add cache buster to prevent browser from serving stale data
+                const res = await fetch(`${CMS_URL}/score_data?t=${Date.now()}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                lastUpdateTime = Date.now();
+                document.getElementById('statusDot').style.background = '#22c55e';
+
+                // Find most recent junction with data
+                const junctions = Object.keys(data);
+                if (junctions.length === 0) return;
+
+                // Sort by timestamp if available (most recent first)
+                junctions.sort((a, b) => (data[b].timestamp || 0) - (data[a].timestamp || 0));
+
+                const junctionId = junctions[0];
+                document.getElementById('junctionDisplay').textContent = junctionId;
+
+                const jData = data[junctionId];
+                const lanes = jData.lanes || {};
+
+                // Render cards if not done
+                const existingCard = document.getElementById('card-North');
+                if (!existingCard) renderCards();
+
+                // Update each phase — handle different lane name formats
+                // The CMS may use "North", "North_Straight", "North_All", etc.
+                for (const phase of PHASES) {
+                    // Try exact match first
+                    let laneData = lanes[phase];
+
+                    // Try prefix match (e.g., "North_Straight", "North_All")
+                    if (!laneData) {
+                        for (const key of Object.keys(lanes)) {
+                            if (key.startsWith(phase)) {
+                                laneData = lanes[key];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (laneData) {
+                        updateCard(phase, laneData);
+                    }
+                }
+
+            } catch (err) {
+                document.getElementById('statusDot').style.background = '#ef4444';
+                console.warn('Poll error:', err.message);
+            }
+        }
+
+        // ── Timer Display ──────────────────────────────────────────
+        function updateTimerDisplay() {
+            // Live Clock (Prove page is not frozen)
+            const now = new Date();
+            document.getElementById('liveClock').textContent = now.toLocaleTimeString();
+
+            const el = document.getElementById('updateTimer');
+            if (lastUpdateTime === 0) {
+                el.textContent = 'Connecting...';
+            } else {
+                const ago = ((Date.now() - lastUpdateTime) / 1000).toFixed(1);
+                el.textContent = `${ago}s ago`;
+            }
+        }
+
+        // ── Mode Switch ────────────────────────────────────────────
+        function switchMode(mode) {
+            currentMode = mode;
+
+            // Update tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+
+            // Re-render cards with correct mode
+            renderCards();
+        }
+
+        // ── Init ───────────────────────────────────────────────────
+        pollTimer = setInterval(fetchData, POLL_INTERVAL);
+        setInterval(updateTimerDisplay, 200);
+        fetchData(); // Immediate first call
+
+    </script>
+</body>
+
+</html>

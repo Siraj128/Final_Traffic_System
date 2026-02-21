@@ -1,0 +1,14 @@
+{
+    "carla_host": "localhost",
+    "carla_port": 2000,
+    "bridge_port": 8100,
+    "town": "Town05",
+    "target_junction_index": 0,
+    "vehicle_count": 40,
+    "spectator_height": 50,
+    "yellow_duration_s": 2.0,
+    "all_red_duration_s": 1.5,
+    "default_green_s": 30,
+    "hud_refresh_s": 0.1,
+    "_comment": "CARLA Bridge configuration. target_junction_index selects which Town05 junction to control."
+}

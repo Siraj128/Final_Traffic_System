@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart-Net Command Center</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --bg-app: #f0f2f5;
+            --panel-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent-color: #0056b3;
+            --accent-hover: #004494;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-app);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            z-index: 1;
+        }
+
+        .ui-panel {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            width: 360px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            z-index: 1000;
+            box-shadow: var(--shadow-soft);
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        h3 {
+            margin: 0 0 24px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success-color);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .node-id {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .node-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: var(--text-primary);
+        }
+
+        .node-coords {
+            font-family: 'Consolas', monospace;
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .launch-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .launch-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .launch-btn:disabled {
+            background: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        /* Map Elements */
+        .pro-pin {
+            background: var(--accent-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            width: 18px;
+            height: 18px;
+            box-sizing: border-box;
+        }
+
+        .arrow-icon {
+            background: transparent;
+            border: none;
+        }
+
+        .leaflet-popup-content-wrapper {
+            background: white;
+            color: var(--text-primary);
+            border-radius: 8px;
+            box-shadow: var(--shadow-soft);
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ui-panel">
+        <h1>Smart-Net Command</h1>
+        <h3>Network Control Interface</h3>
+
+        <div class="status-row">
+            <div class="dot"></div>
+            <div class="status-text">SYSTEM READY</div>
+        </div>
+
+        <!-- MODE SELECTION -->
+        <div style="margin-bottom: 20px;">
+            <label
+                style="font-size: 12px; font-weight: 700; color: #666; display: block; margin-bottom: 8px; text-transform: uppercase;">Operating
+                Mode</label>
+            <select id="mode-select"
+                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; background: #f9f9f9; font-size: 14px; color: #333;">
+                <option value="VIDEO">VIDEO (Simulation)</option>
+                <option value="CAMERA">CAMERA (Live Feed)</option>
+                <option value="GHOST">GHOST (SUMO Sim)</option>
+            </select>
+        </div>
+
+        <!-- DETECTION METHOD -->
+        <div style="margin-bottom: 20px;">
+            <label
+                style="font-size: 12px; font-weight: 700; color: #666; display: block; margin-bottom: 8px; text-transform: uppercase;">Detection
+                System</label>
+            <select id="method-select"
+                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; background: #f9f9f9; font-size: 14px; color: #333;">
+                <option value="HYBRID">HYBRID (Speed + Queue)</option>
+                <option value="GRID">GRID (ROI Counting Only)</option>
+            </select>
+        </div>
+
+        <!-- ANPR MODE (New Phase 18) -->
+        <div style="margin-bottom: 20px;">
+            <label
+                style="font-size: 12px; font-weight: 700; color: #666; display: block; margin-bottom: 8px; text-transform: uppercase;">ANPR
+                Mode</label>
+            <select id="anpr-select"
+                style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; background: #f9f9f9; font-size: 14px; color: #333;">
+                <option value="REAL">REAL (OCR + Tracking)</option>
+                <option value="DUMMY">DEMO (100 Profiles)</option>
+            </select>
+        </div>
+
+        <!-- VISUALIZATION TOGGLE -->
+        <div style="margin-bottom: 12px; display: flex; align-items: center;">
+            <input type="checkbox" id="chk-show" checked style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="chk-show"
+                style="margin-left: 10px; font-size: 14px; color: #333; font-weight: 500; cursor: pointer;">Show Video
+                Feed</label>
+        </div>
+
+        <!-- ROI TOGGLE -->
+        <div style="margin-bottom: 24px; display: flex; align-items: center;">
+            <input type="checkbox" id="chk-roi" checked style="width: 18px; height: 18px; cursor: pointer;">
+            <label for="chk-roi"
+                style="margin-left: 10px; font-size: 14px; color: #333; font-weight: 500; cursor: pointer;">Show ROI
+                Lines</label>
+        </div>
+
+        <div class="info-card">
+            <div class="node-id" id="lbl-id">Awaiting Selection</div>
+            <div class="node-name" id="lbl-name">Select a Junction</div>
+            <div class="node-coords" id="lbl-coords">Click a blue pin on the map to begin.</div>
+        </div>
+
+        <button id="btn-launch" class="launch-btn" onclick="launchSystem()" disabled>Initialize Node</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script id="traffic-nodes-data" type="application/json">{{ nodes | tojson }}</script>
+
+    <script>
+        // 1. Initialize Map
+        const map = L.map('map').setView([18.5204, 73.8567], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 20
+        }).addTo(map);
+
+        const nodes = JSON.parse(document.getElementById('traffic-nodes-data').textContent);
+        let selectedNodeId = null;
+
+        // --- 2. BI-DIRECTIONAL TRAFFIC CONNECTIONS ---
+        // We explicitly define A->B and B->A for the full mesh.
+        const connections = [
+            // West Corridor (Bidirectional)
+            { from: "PUNE_JW_01", to: "PUNE_JW_02" }, { from: "PUNE_JW_02", to: "PUNE_JW_01" },
+            { from: "PUNE_JW_02", to: "PUNE_JW_03" }, { from: "PUNE_JW_03", to: "PUNE_JW_02" },
+            { from: "PUNE_JW_03", to: "PUNE_JW_04" }, { from: "PUNE_JW_04", to: "PUNE_JW_03" },
+            { from: "PUNE_JW_04", to: "PUNE_JW_05" }, { from: "PUNE_JW_05", to: "PUNE_JW_04" },
+
+            // Core Loop
+            { from: "PUNE_JW_06", to: "PUNE_JW_10" }, { from: "PUNE_JW_10", to: "PUNE_JW_06" },
+            { from: "PUNE_JW_07", to: "PUNE_JW_08" }, { from: "PUNE_JW_08", to: "PUNE_JW_07" },
+            { from: "PUNE_JW_08", to: "PUNE_JW_09" }, { from: "PUNE_JW_09", to: "PUNE_JW_08" },
+
+            // Kothrud
+            { from: "PUNE_JW_11", to: "PUNE_JW_12" }, { from: "PUNE_JW_12", to: "PUNE_JW_11" },
+            { from: "PUNE_JW_12", to: "PUNE_JW_13" }, { from: "PUNE_JW_13", to: "PUNE_JW_12" },
+            { from: "PUNE_JW_13", to: "PUNE_JW_06" }, { from: "PUNE_JW_06", to: "PUNE_JW_13" },
+
+            // South
+            { from: "PUNE_JW_15", to: "PUNE_JW_16" }, { from: "PUNE_JW_16", to: "PUNE_JW_15" },
+            { from: "PUNE_JW_16", to: "PUNE_JW_17" }, { from: "PUNE_JW_17", to: "PUNE_JW_16" },
+            { from: "PUNE_JW_17", to: "PUNE_JW_36" }, { from: "PUNE_JW_36", to: "PUNE_JW_17" },
+            { from: "PUNE_JW_36", to: "PUNE_JW_35" }, { from: "PUNE_JW_35", to: "PUNE_JW_36" },
+
+            // East
+            { from: "PUNE_JW_05", to: "PUNE_JW_19" }, { from: "PUNE_JW_19", to: "PUNE_JW_05" },
+            { from: "PUNE_JW_19", to: "PUNE_JW_20" }, { from: "PUNE_JW_20", to: "PUNE_JW_19" },
+            { from: "PUNE_JW_20", to: "PUNE_JW_21" }, { from: "PUNE_JW_21", to: "PUNE_JW_20" },
+
+            // North
+            { from: "PUNE_JW_24", to: "PUNE_JW_25" }, { from: "PUNE_JW_25", to: "PUNE_JW_24" },
+            { from: "PUNE_JW_25", to: "PUNE_JW_26" }, { from: "PUNE_JW_26", to: "PUNE_JW_25" },
+            { from: "PUNE_JW_26", to: "PUNE_JW_23" }, { from: "PUNE_JW_23", to: "PUNE_JW_26" },
+
+            // PCMC
+            { from: "PUNE_JW_27", to: "PUNE_JW_28" }, { from: "PUNE_JW_28", to: "PUNE_JW_27" },
+            { from: "PUNE_JW_28", to: "PUNE_JW_29" }, { from: "PUNE_JW_29", to: "PUNE_JW_28" },
+            { from: "PUNE_JW_29", to: "PUNE_JW_01" }, { from: "PUNE_JW_01", to: "PUNE_JW_29" },
+
+            // Hadapsar & Kharadi
+            { from: "PUNE_JW_31", to: "PUNE_JW_32" }, { from: "PUNE_JW_32", to: "PUNE_JW_31" },
+            { from: "PUNE_JW_32", to: "PUNE_JW_35" }, { from: "PUNE_JW_35", to: "PUNE_JW_32" },
+            { from: "PUNE_JW_33", to: "PUNE_JW_34" }, { from: "PUNE_JW_34", to: "PUNE_JW_33" },
+            { from: "PUNE_JW_34", to: "PUNE_JW_24" }, { from: "PUNE_JW_24", to: "PUNE_JW_34" }
+        ];
+
+        // --- 3. HELPER: Offset Algorithm for "Two-Way Road" Effect ---
+        function getOffsetPoint(lat1, lng1, lat2, lng2, offsetPixels) {
+            // Earth radius approximation not strictly needed for small visual offsets, 
+            // but we need vector math on Mercator projection logic.
+            // Simplified: Treat lat/lng as cartesian for very short distances (city blocks).
+
+            let dx = lng2 - lng1;
+            let dy = lat2 - lat1;
+            let len = Math.sqrt(dx * dx + dy * dy);
+
+            // Normalize
+            let uX = dx / len;
+            let uY = dy / len;
+
+            // Perpendicular vector (-y, x)
+            let pX = -uY;
+            let pY = uX;
+
+            // Apply offset (Scaling factor 0.0001 roughly equals ~10 meters visually)
+            // Adjust this scale for visual separation
+            let scale = 0.0002;
+
+            return [
+                lat1 + (pY * scale),
+                lng1 + (pX * scale)
+            ];
+        }
+
+        // --- 4. DRAW CONNECTIONS ---
+        connections.forEach(conn => {
+            const startNode = nodes[conn.from];
+            const endNode = nodes[conn.to];
+
+            if (startNode && endNode) {
+                // Apply Offset to separate lanes
+                // The offset logic shifts the line "Right" relative to direction of travel
+                const startOffset = getOffsetPoint(startNode.lat, startNode.lng, endNode.lat, endNode.lng);
+                const endOffset = getOffsetPoint(endNode.lat, endNode.lng, startNode.lat, startNode.lng);
+
+                // Oops, the offset function above shifts start point perpendicular.
+                // We need to shift BOTH points by the same vector derived from the line angle.
+
+                // Re-calculating correctly for drawing loop:
+                const dLat = endNode.lat - startNode.lat;
+                const dLng = endNode.lng - startNode.lng;
+                const len = Math.sqrt(dLat * dLat + dLng * dLng);
+
+                // Perpendicular vector components
+                const offsetScale = 0.00015; // Gap width
+                const offLat = (-dLng / len) * offsetScale;
+                const offLng = (dLat / len) * offsetScale;
+
+                // Shift points "Right"
+                const lineStart = [startNode.lat + offLat, startNode.lng + offLng];
+                const lineEnd = [endNode.lat + offLat, endNode.lng + offLng];
+
+                // Draw Line
+                L.polyline([lineStart, lineEnd], {
+                    color: '#999', weight: 2, opacity: 0.6, dashArray: '4, 8'
+                }).addTo(map);
+
+                // Draw Arrow
+                const midLat = (lineStart[0] + lineEnd[0]) / 2;
+                const midLng = (lineStart[1] + lineEnd[1]) / 2;
+                let angle = Math.atan2(dLng, dLat) * (180 / Math.PI);
+
+                const arrowIcon = L.divIcon({
+                    className: 'arrow-icon',
+                    iconSize: [10, 10], iconAnchor: [5, 5],
+                    html: `
+                        <div style="transform: rotate(${angle}deg);">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="#666">
+                                <path d="M12 2L2 22L12 18L22 22L12 2Z" />
+                            </svg>
+                        </div>`
+                });
+                L.marker([midLat, midLng], { icon: arrowIcon, interactive: false }).addTo(map);
+            }
+        });
+
+        // --- 5. DRAW PINS ---
+        const proIcon = L.divIcon({ className: 'pro-pin', iconSize: [18, 18], iconAnchor: [9, 9], popupAnchor: [0, -10] });
+        for (const [id, data] of Object.entries(nodes)) {
+            const marker = L.marker([data.lat, data.lng], { icon: proIcon }).addTo(map);
+            marker.on('click', () => { selectNode(id, data); });
+            marker.bindPopup(`<b>${data.name}</b><br>ID: ${id}`);
+        }
+
+        function selectNode(id, data) {
+            selectedNodeId = id;
+            document.getElementById('lbl-id').innerText = `ID: ${id}`;
+            document.getElementById('lbl-name').innerText = data.name;
+            document.getElementById('lbl-coords').innerText = `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`;
+            const btn = document.getElementById('btn-launch');
+            btn.disabled = false; btn.innerText = "INITIALIZE NODE";
+        }
+
+        async function launchSystem() {
+            if (!selectedNodeId) return;
+
+            const btn = document.getElementById('btn-launch');
+            const modeSelect = document.getElementById('mode-select');
+            const mode = modeSelect ? modeSelect.value : "VIDEO"; // Fallback safety
+
+            const methodSelect = document.getElementById('method-select');
+            const method = methodSelect ? methodSelect.value : "HYBRID";
+
+            const chkShow = document.getElementById('chk-show');
+            const showVideo = chkShow ? chkShow.checked : true;
+
+            const chkRoi = document.getElementById('chk-roi');
+            const showRoi = chkRoi ? chkRoi.checked : true;
+
+            btn.innerText = "ACTIVATING...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/launch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: selectedNodeId,
+                        mode: mode,
+                        detect_method: method,
+                        anpr_mode: document.getElementById('anpr-select').value, // Phase 18
+                        show_video: showVideo,
+                        show_roi: showRoi
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    btn.innerText = "NODE ACTIVE ✔";
+                    btn.style.backgroundColor = "var(--success-color)";
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        btn.innerText = "INITIALIZE NODE";
+                        btn.style.backgroundColor = "";
+                        btn.disabled = false;
+                    }, 3000);
+                } else {
+                    alert("Error: " + result.message);
+                    btn.innerText = "INITIALIZE NODE";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Connection Error. Is app.py running?\n" + err);
+                btn.innerText = "INITIALIZE NODE";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

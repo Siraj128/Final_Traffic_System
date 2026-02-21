@@ -1,0 +1,4 @@
+const CONFIG = {
+    // REPLACE WITH YOUR REAL GOOGLE MAPS KEY
+    API_KEY: "AIzaSyBjNcYttOpLGiXguu5NUFZhbd9ctmxYw1c"
+};

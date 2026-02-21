@@ -1,0 +1,72 @@
+{
+    "_comment": "Lane Conflict Matrix (Part 9 Spec). For each primary direction, defines which additional lanes can be opened based on congestion state.",
+    "_naming": "'_All' = Straight + Right grouped lane. '_Left' = dedicated Left Turn lane.",
+    "North": {
+        "SAFE": [
+            "North_All",
+            "West_Left"
+        ],
+        "LESS_CONGESTION": [
+            "North_All",
+            "West_Left",
+            "South_Left"
+        ],
+        "MORE_LESSER_CONGESTION": [
+            "North_All",
+            "West_Left",
+            "South_Left",
+            "East_Left"
+        ]
+    },
+    "South": {
+        "SAFE": [
+            "South_All",
+            "East_Left"
+        ],
+        "LESS_CONGESTION": [
+            "South_All",
+            "East_Left",
+            "North_Left"
+        ],
+        "MORE_LESSER_CONGESTION": [
+            "South_All",
+            "East_Left",
+            "North_Left",
+            "West_Left"
+        ]
+    },
+    "East": {
+        "SAFE": [
+            "East_All",
+            "North_Left"
+        ],
+        "LESS_CONGESTION": [
+            "East_All",
+            "North_Left",
+            "West_Left"
+        ],
+        "MORE_LESSER_CONGESTION": [
+            "East_All",
+            "North_Left",
+            "West_Left",
+            "South_Left"
+        ]
+    },
+    "West": {
+        "SAFE": [
+            "West_All",
+            "South_Left"
+        ],
+        "LESS_CONGESTION": [
+            "West_All",
+            "South_Left",
+            "East_Left"
+        ],
+        "MORE_LESSER_CONGESTION": [
+            "West_All",
+            "South_Left",
+            "East_Left",
+            "North_Left"
+        ]
+    }
+}

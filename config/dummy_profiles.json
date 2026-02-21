@@ -1,0 +1,702 @@
+[
+    {
+        "plate": "MH12-DE-1001",
+        "owner": "Aditya Sharma",
+        "phone": "9876543210",
+        "email": "aditya.s@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1002",
+        "owner": "Priya Patel",
+        "phone": "9876543211",
+        "email": "priya.p@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1003",
+        "owner": "Rahul Verma",
+        "phone": "9876543212",
+        "email": "rahul.v@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1004",
+        "owner": "Sneha Gupta",
+        "phone": "9876543213",
+        "email": "sneha.g@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1005",
+        "owner": "Amit Singh",
+        "phone": "9876543214",
+        "email": "amit.s@gmail.com",
+        "score": 8
+    },
+    {
+        "plate": "MH12-DE-1006",
+        "owner": "Neha Joshi",
+        "phone": "9876543215",
+        "email": "neha.j@yahoo.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1007",
+        "owner": "Vikram Malhotra",
+        "phone": "9876543216",
+        "email": "vikram.m@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1008",
+        "owner": "Anjali Deshmukh",
+        "phone": "9876543217",
+        "email": "anjali.d@outlook.com",
+        "score": 7
+    },
+    {
+        "plate": "MH12-DE-1009",
+        "owner": "Rohan Mehta",
+        "phone": "9876543218",
+        "email": "rohan.m@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1010",
+        "owner": "Kavita Reddy",
+        "phone": "9876543219",
+        "email": "kavita.r@yahoo.com",
+        "score": 6
+    },
+    {
+        "plate": "MH12-DE-1011",
+        "owner": "Suresh Nair",
+        "phone": "9876543220",
+        "email": "suresh.n@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1012",
+        "owner": "Meera Iyer",
+        "phone": "9876543221",
+        "email": "meera.i@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1013",
+        "owner": "Arjun Kapoor",
+        "phone": "9876543222",
+        "email": "arjun.k@gmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1014",
+        "owner": "Pooja Hegde",
+        "phone": "9876543223",
+        "email": "pooja.h@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1015",
+        "owner": "Manish Tiwari",
+        "phone": "9876543224",
+        "email": "manish.t@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1016",
+        "owner": "Simran Kaur",
+        "phone": "9876543225",
+        "email": "simran.k@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1017",
+        "owner": "Rajesh Kumar",
+        "phone": "9876543226",
+        "email": "rajesh.k@gmail.com",
+        "score": 5
+    },
+    {
+        "plate": "MH12-DE-1018",
+        "owner": "Sunita Rao",
+        "phone": "9876543227",
+        "email": "sunita.r@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1019",
+        "owner": "Vikas Dubey",
+        "phone": "9876543228",
+        "email": "vikas.d@hotmail.com",
+        "score": 8
+    },
+    {
+        "plate": "MH12-DE-1020",
+        "owner": "Nisha Agarwal",
+        "phone": "9876543229",
+        "email": "nisha.a@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1021",
+        "owner": "Tarun Chawla",
+        "phone": "9876543230",
+        "email": "tarun.c@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1022",
+        "owner": "Divya Saxena",
+        "phone": "9876543231",
+        "email": "divya.s@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1023",
+        "owner": "Kabir Khan",
+        "phone": "9876543232",
+        "email": "kabir.k@hotmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1024",
+        "owner": "Zara Sheikh",
+        "phone": "9876543233",
+        "email": "zara.s@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1025",
+        "owner": "Omkar Patil",
+        "phone": "9876543234",
+        "email": "omkar.p@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1026",
+        "owner": "Swati Kulkarni",
+        "phone": "9876543235",
+        "email": "swati.k@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1027",
+        "owner": "Pranav Bhatt",
+        "phone": "9876543236",
+        "email": "pranav.b@hotmail.com",
+        "score": 7
+    },
+    {
+        "plate": "MH12-DE-1028",
+        "owner": "Riya Sen",
+        "phone": "9876543237",
+        "email": "riya.s@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1029",
+        "owner": "Karan Johar",
+        "phone": "9876543238",
+        "email": "karan.j@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1030",
+        "owner": "Alia Bhatt",
+        "phone": "9876543239",
+        "email": "alia.b@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1031",
+        "owner": "Ranbir Kapoor",
+        "phone": "9876543240",
+        "email": "ranbir.k@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1032",
+        "owner": "Deepika P",
+        "phone": "9876543241",
+        "email": "deepika.p@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1033",
+        "owner": "Ranveer Singh",
+        "phone": "9876543242",
+        "email": "ranveer.s@gmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1034",
+        "owner": "Shahrukh Khan",
+        "phone": "9876543243",
+        "email": "srk@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1035",
+        "owner": "Salman Khan",
+        "phone": "9876543244",
+        "email": "salman.k@hotmail.com",
+        "score": 4
+    },
+    {
+        "plate": "MH12-DE-1036",
+        "owner": "Aamir Khan",
+        "phone": "9876543245",
+        "email": "aamir.k@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1037",
+        "owner": "Akshay Kumar",
+        "phone": "9876543246",
+        "email": "akshay.k@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1038",
+        "owner": "Ajay Devgn",
+        "phone": "9876543247",
+        "email": "ajay.d@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1039",
+        "owner": "Hrithik Roshan",
+        "phone": "9876543248",
+        "email": "hrithik.r@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1040",
+        "owner": "Katrina Kaif",
+        "phone": "9876543249",
+        "email": "katrina.k@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1041",
+        "owner": "John Doe",
+        "phone": "9876543250",
+        "email": "john.d@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1042",
+        "owner": "Jane Smith",
+        "phone": "9876543251",
+        "email": "jane.s@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1043",
+        "owner": "Robert Brow",
+        "phone": "9876543252",
+        "email": "robert.b@hotmail.com",
+        "score": 8
+    },
+    {
+        "plate": "MH12-DE-1044",
+        "owner": "Emily Davis",
+        "phone": "9876543253",
+        "email": "emily.d@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1045",
+        "owner": "Michael Wil",
+        "phone": "9876543254",
+        "email": "michael.w@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1046",
+        "owner": "Sarah Johns",
+        "phone": "9876543255",
+        "email": "sarah.j@yahoo.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1047",
+        "owner": "David Mill",
+        "phone": "9876543256",
+        "email": "david.m@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1048",
+        "owner": "Laura Tayl",
+        "phone": "9876543257",
+        "email": "laura.t@outlook.com",
+        "score": 7
+    },
+    {
+        "plate": "MH12-DE-1049",
+        "owner": "James Ande",
+        "phone": "9876543258",
+        "email": "james.a@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1050",
+        "owner": "Emma Thom",
+        "phone": "9876543259",
+        "email": "emma.t@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1051",
+        "owner": "William Jac",
+        "phone": "9876543260",
+        "email": "william.j@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1052",
+        "owner": "Olivia Whi",
+        "phone": "9876543261",
+        "email": "olivia.w@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1053",
+        "owner": "Lucas Har",
+        "phone": "9876543262",
+        "email": "lucas.h@gmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1054",
+        "owner": "Sophia Mar",
+        "phone": "9876543263",
+        "email": "sophia.m@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1055",
+        "owner": "Mason Tho",
+        "phone": "9876543264",
+        "email": "mason.t@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1056",
+        "owner": "Ava Garci",
+        "phone": "9876543265",
+        "email": "ava.g@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1057",
+        "owner": "Ethan Mar",
+        "phone": "9876543266",
+        "email": "ethan.m@gmail.com",
+        "score": 5
+    },
+    {
+        "plate": "MH12-DE-1058",
+        "owner": "Isabella R",
+        "phone": "9876543267",
+        "email": "isabella.r@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1059",
+        "owner": "Logan Rod",
+        "phone": "9876543268",
+        "email": "logan.r@hotmail.com",
+        "score": 8
+    },
+    {
+        "plate": "MH12-DE-1060",
+        "owner": "Mia Lewis",
+        "phone": "9876543269",
+        "email": "mia.l@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1061",
+        "owner": "Jacob Lee",
+        "phone": "9876543270",
+        "email": "jacob.l@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1062",
+        "owner": "Charlotte",
+        "phone": "9876543271",
+        "email": "charlotte.w@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1063",
+        "owner": "Michael B",
+        "phone": "9876543272",
+        "email": "michael.b@hotmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1064",
+        "owner": "Amelia S",
+        "phone": "9876543273",
+        "email": "amelia.s@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1065",
+        "owner": "Daniel K",
+        "phone": "9876543274",
+        "email": "daniel.k@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1066",
+        "owner": "Harper C",
+        "phone": "9876543275",
+        "email": "harper.c@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1067",
+        "owner": "Matthew A",
+        "phone": "9876543276",
+        "email": "matthew.a@hotmail.com",
+        "score": 7
+    },
+    {
+        "plate": "MH12-DE-1068",
+        "owner": "Evelyn Y",
+        "phone": "9876543277",
+        "email": "evelyn.y@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1069",
+        "owner": "Joseph H",
+        "phone": "9876543278",
+        "email": "joseph.h@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1070",
+        "owner": "Abigail Tremblay",
+        "phone": "9876543279",
+        "email": "abigail.t@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1071",
+        "owner": "Samuel Gagnon",
+        "phone": "9876543280",
+        "email": "samuel.g@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1072",
+        "owner": "Elizabeth Roy",
+        "phone": "9876543281",
+        "email": "elizabeth.r@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1073",
+        "owner": "David Côté",
+        "phone": "9876543282",
+        "email": "david.c@gmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1074",
+        "owner": "Sofia Bouchard",
+        "phone": "9876543283",
+        "email": "sofia.b@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1075",
+        "owner": "Benjamin Gauthier",
+        "phone": "9876543284",
+        "email": "benjamin.g@hotmail.com",
+        "score": 4
+    },
+    {
+        "plate": "MH12-DE-1076",
+        "owner": "Avery Morin",
+        "phone": "9876543285",
+        "email": "avery.m@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1077",
+        "owner": "Gabriel Lavoie",
+        "phone": "9876543286",
+        "email": "gabriel.l@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1078",
+        "owner": "Ella Fortin",
+        "phone": "9876543287",
+        "email": "ella.f@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1079",
+        "owner": "Carter Pelletier",
+        "phone": "9876543288",
+        "email": "carter.p@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1080",
+        "owner": "Scarlett Belanger",
+        "phone": "9876543289",
+        "email": "scarlett.b@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1081",
+        "owner": "Luke Levesque",
+        "phone": "9876543290",
+        "email": "luke.l@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1082",
+        "owner": "Grace Bergeron",
+        "phone": "9876543291",
+        "email": "grace.b@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1083",
+        "owner": "Dylan Richard",
+        "phone": "9876543292",
+        "email": "dylan.r@hotmail.com",
+        "score": 8
+    },
+    {
+        "plate": "MH12-DE-1084",
+        "owner": "Chloe Lapointe",
+        "phone": "9876543293",
+        "email": "chloe.l@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1085",
+        "owner": "Isaac Poirier",
+        "phone": "9876543294",
+        "email": "isaac.p@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1086",
+        "owner": "Zoey Simard",
+        "phone": "9876543295",
+        "email": "zoey.s@yahoo.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1087",
+        "owner": "Gabriel Beaulieu",
+        "phone": "9876543296",
+        "email": "gabriel.b@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1088",
+        "owner": "Penelope Ouellet",
+        "phone": "9876543297",
+        "email": "penelope.o@outlook.com",
+        "score": 7
+    },
+    {
+        "plate": "MH12-DE-1089",
+        "owner": "Henry Desjardins",
+        "phone": "9876543298",
+        "email": "henry.d@gmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1090",
+        "owner": "Layla Caron",
+        "phone": "9876543299",
+        "email": "layla.c@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1091",
+        "owner": "Owen Dubé",
+        "phone": "9876543300",
+        "email": "owen.d@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1092",
+        "owner": "Riley Bouchard",
+        "phone": "9876543301",
+        "email": "riley.b@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1093",
+        "owner": "Wyatt Roy",
+        "phone": "9876543302",
+        "email": "wyatt.r@gmail.com",
+        "score": 9
+    },
+    {
+        "plate": "MH12-DE-1094",
+        "owner": "Nora Lefebvre",
+        "phone": "9876543303",
+        "email": "nora.l@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1095",
+        "owner": "Jack Dionne",
+        "phone": "9876543304",
+        "email": "jack.d@hotmail.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1096",
+        "owner": "Lily Hebert",
+        "phone": "9876543305",
+        "email": "lily.h@outlook.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1097",
+        "owner": "Julian Grenier",
+        "phone": "9876543306",
+        "email": "julian.g@gmail.com",
+        "score": 5
+    },
+    {
+        "plate": "MH12-DE-1098",
+        "owner": "Addison Nadeau",
+        "phone": "9876543307",
+        "email": "addison.n@yahoo.com",
+        "score": 10
+    },
+    {
+        "plate": "MH12-DE-1099",
+        "owner": "Levi Lapierre",
+        "phone": "9876543308",
+        "email": "levi.l@hotmail.com",
+        "score": 8
+    },
+    {
+        "plate": "MH12-DE-1100",
+        "owner": "Aubrey Landry",
+        "phone": "9876543309",
+        "email": "aubrey.l@outlook.com",
+        "score": 10
+    }
+]
